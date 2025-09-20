@@ -26,7 +26,7 @@ public class MenuService
             var input = Console.ReadLine();
             if (int.TryParse(input, out int choice) && choice == 0) 
             {
-                break;
+                Environment.Exit(0);
             }
 
             var selectedLab = _labSolvers.FirstOrDefault(l => l.Number == choice);

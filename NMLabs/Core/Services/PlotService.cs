@@ -13,10 +13,11 @@ public interface IPlotSevice
 }
 public class PlotService : IPlotSevice
 {
-    private readonly Plot _plot = new();
+    private Plot _plot = new();
 
     public void CreatePlot(string title, string xlabel, string ylabel)
     {
+        _plot = new();
         _plot.Title(title);
         _plot.XLabel(xlabel);
         _plot.YLabel(ylabel);
