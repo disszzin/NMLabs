@@ -1,12 +1,13 @@
 ﻿using ScottPlot;
+using ScottPlot.WinForms;
 
 namespace NMLabs.Core.Services;
 
 public interface IPlotSevice 
 {
-    void CreatePlot(string title, string xlabel, string ylabe, double width = 1024, double height = 768);
-    void AddScatter(double[] xs, double[] ys, string label, Color color, double lineWidth = 1);
-    void AddLine(double x1, double y1, double x2, double y2, string label, Color color, double lineWidth = 1);
+    void CreatePlot(string title, string xlabel, string ylabe);
+    void AddScatter(double[] xs, double[] ys, ScottPlot.Color color);
+    void AddLine(double x1, double y1, double x2, double y2, string label, ScottPlot.Color color, double lineWidth = 1);
     void SavePlot(string filePath);
     void ShowPlot();
 }
@@ -14,28 +15,31 @@ public class PlotService : IPlotSevice
 {
     private readonly Plot _plot = new();
 
-    public void CreatePlot(string title, string xlabel, string ylabel, double width = 1024, double height = 768)
+    public void CreatePlot(string title, string xlabel, string ylabel)
     {
-        throw new NotImplementedException();
+        _plot.Title(title);
+        _plot.XLabel(xlabel);
+        _plot.YLabel(ylabel);
     }
 
-    public void AddScatter(double[] xs, double[] ys, string label, Color color, double lineWidth = 1)
+    public void AddScatter(double[] xs, double[] ys, ScottPlot.Color color)
     {
-        throw new NotImplementedException();
+        _plot.Add.Scatter(xs, ys, color);
+        _plot.Axes.AutoScale();
     }
 
-    public void AddLine(double x1, double y1, double x2, double y2, string label, Color color, double lineWidth = 1)
+    public void AddLine(double x1, double y1, double x2, double y2, string label, ScottPlot.Color color, double lineWidth = 1)
     {
         throw new NotImplementedException();
     }
 
     public void SavePlot(string filePath)
     {
-        throw new NotImplementedException();
+        _plot.SavePng(filePath, 1920, 1080);
     }
 
     public void ShowPlot()
     {
-        throw new NotImplementedException();
+        FormsPlotViewer.Launch(_plot);
     }
 }

@@ -4,5 +4,5 @@ public interface ILabSolver
 {
     string Name { get; }
     int Number { get; }
-    Task Run();
+    Task RunAsync();
 }
