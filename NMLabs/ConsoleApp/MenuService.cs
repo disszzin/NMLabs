@@ -19,14 +19,15 @@ public class MenuService
             Console.WriteLine("Выберите лабораторную работу для запуска:");
             foreach (var lab in _labSolvers) 
             {
-                Console.WriteLine($"{lab.Number}) {lab.Name}");
+                Console.WriteLine($"{lab.Number}. {lab.Name}");
             }
             Console.WriteLine("0. Выход");
+            Console.Write("Ввод: ");
 
             var input = Console.ReadLine();
             if (int.TryParse(input, out int choice) && choice == 0) 
             {
-                break;
+                Environment.Exit(0);
             }
 
             var selectedLab = _labSolvers.FirstOrDefault(l => l.Number == choice);

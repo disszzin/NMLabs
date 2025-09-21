@@ -1,6 +1,6 @@
 ﻿namespace NMLabs.Core.Interfaces;
 
-public interface IMathSolver<TInputData, TSolutionType>
+public interface IMathSolver<TInputData, TSolution>
 {
-    TSolutionType Solve(TInputData data);
+    TSolution Solve(TInputData data);
 }
