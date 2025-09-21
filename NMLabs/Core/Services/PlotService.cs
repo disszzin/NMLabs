@@ -7,7 +7,6 @@ public interface IPlotSevice
 {
     void CreatePlot(string title, string xlabel = "", string ylabel = "");
     void AddScatter(double[] xs, double[] ys, string label, ScottPlot.Color color, float lineWidth = 1);
-    void AddLine(double x1, double y1, double x2, double y2, string label, ScottPlot.Color color, float lineWidth = 1);
     void SavePlot(string filePath);
     void ShowPlot();
 }
@@ -30,11 +29,6 @@ public class PlotService : IPlotSevice
         scatter.LegendText = label;
         scatter.MarkerSize = 0;
         _plot.Axes.AutoScale();
-    }
-
-    public void AddLine(double x1, double y1, double x2, double y2, string label, ScottPlot.Color color, float lineWidth = 1)
-    {
-        throw new NotImplementedException();
     }
 
     public void SavePlot(string filePath)

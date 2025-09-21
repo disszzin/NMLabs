@@ -9,6 +9,7 @@ using IHost host = Host.CreateDefaultBuilder(args)
     {
         services.AddSingleton<IPlotSevice, PlotService>();
         services.AddSingleton<MenuService>();
+
         services.AddTransient<ILabSolver, NMLabs.Labs.Lab1_Advection.LabSolver>();
     })
     .Build();
