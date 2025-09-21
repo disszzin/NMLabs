@@ -5,9 +5,9 @@ namespace NMLabs.Core.Services;
 
 public interface IPlotSevice 
 {
-    void CreatePlot(string title, string xlabel, string ylabe);
-    void AddScatter(double[] xs, double[] ys, ScottPlot.Color color);
-    void AddLine(double x1, double y1, double x2, double y2, string label, ScottPlot.Color color, double lineWidth = 1);
+    void CreatePlot(string title, string xlabel = "", string ylabel = "");
+    void AddScatter(double[] xs, double[] ys, string label, ScottPlot.Color color, float lineWidth = 1);
+    void AddLine(double x1, double y1, double x2, double y2, string label, ScottPlot.Color color, float lineWidth = 1);
     void SavePlot(string filePath);
     void ShowPlot();
 }
@@ -15,7 +15,7 @@ public class PlotService : IPlotSevice
 {
     private Plot _plot = new();
 
-    public void CreatePlot(string title, string xlabel, string ylabel)
+    public void CreatePlot(string title, string xlabel = "", string ylabel = "")
     {
         _plot = new();
         _plot.Title(title);
@@ -23,13 +23,16 @@ public class PlotService : IPlotSevice
         _plot.YLabel(ylabel);
     }
 
-    public void AddScatter(double[] xs, double[] ys, ScottPlot.Color color)
+    public void AddScatter(double[] xs, double[] ys, string label, ScottPlot.Color color, float lineWidth = 1)
     {
-        _plot.Add.Scatter(xs, ys, color);
+        var scatter = _plot.Add.Scatter(xs, ys, color);
+        scatter.LineWidth = lineWidth;
+        scatter.LegendText = label;
+        scatter.MarkerSize = 0;
         _plot.Axes.AutoScale();
     }
 
-    public void AddLine(double x1, double y1, double x2, double y2, string label, ScottPlot.Color color, double lineWidth = 1)
+    public void AddLine(double x1, double y1, double x2, double y2, string label, ScottPlot.Color color, float lineWidth = 1)
     {
         throw new NotImplementedException();
     }

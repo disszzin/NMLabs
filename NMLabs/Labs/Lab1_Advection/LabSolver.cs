@@ -24,13 +24,14 @@ namespace NMLabs.Labs.Lab1_Advection
             Console.WriteLine($"Запуск лабораторной работы #{Number}: {Name}");
             Console.WriteLine("========================================================================================================================");
 
-            var data = new AdvectionDataModel
+            var data = new AdvectionParameters
             {
                 X = InputHelper.GetDoubleFromConsole("Введите X: "),
                 Dx = InputHelper.GetDoubleFromConsole("Введите dX: "),
                 U = InputHelper.GetDoubleFromConsole("Введите U: "),
                 T0 = InputHelper.GetDoubleFromConsole("Введите T0: "),
-                SafetyFactor = InputHelper.GetDoubleFromConsole("Введите SafetyFactor: "),
+                CFL_Directional = InputHelper.GetDoubleFromConsole("Введите CFL для направленной разности: "),
+                CFL_Central = InputHelper.GetDoubleFromConsole("Введите CFL для центральной разности: "),
             };
 
             Console.WriteLine("Параметры расчета:");
@@ -38,42 +39,36 @@ namespace NMLabs.Labs.Lab1_Advection
             Console.WriteLine($"dx = {data.Dx}");
             Console.WriteLine($"u = {data.U}");
             Console.WriteLine($"T0 = {data.T0}");
-            Console.WriteLine($"SafetyFactor = {data.SafetyFactor}");
+            Console.WriteLine($"CFL Directional = {data.CFL_Directional}");
+            Console.WriteLine($"CFL Central = {data.CFL_Central}");
 
-            var solver = new AdvectionSolver();
-            var (x, finalTemperature, history) = solver.Solve(data);
+            var directionalSolver = new DirectionalAdvectionSolver();
+            var centralSolver = new CentralAdvectionSolver();
+            var (xDir, historyDir) = directionalSolver.Solve(data);
+            var (xCen, historyCen) = centralSolver.Solve(data);
 
-            Console.WriteLine($"\nРасчет завершен. Получено {history.Count} временных срезов.");
+            Console.WriteLine($"\nРасчет завершен. Получено {historyDir.Count} временных срезов для направленной и {historyCen.Count} временных срезов для центральной разности.");
 
-            await PlotResults(x, finalTemperature, history, data);
+            await PlotResults(xDir, historyDir, $"Изменение T по уравнению направленной разности при CFL={data.CFL_Directional}", "Directional", data);
+            await PlotResults(xCen, historyCen, $"Изменение T по уравнению центральной разности при CFL={data.CFL_Central}", "Central", data);
         }
 
-        private async Task PlotResults(double[] x, double[] finalTemperature, List<double[]> history, AdvectionDataModel data) 
+        private Task PlotResults(double[] x, List<double[]> history, string label, string fileMark, AdvectionParameters data) 
         {
-            _plotService.CreatePlot("Финальное распределение температуры", "", "");
-            _plotService.AddScatter(x, finalTemperature, ScottPlot.Color.FromColor(Color.Blue));
-            _plotService.SavePlot("lab1_final.png");
-            Console.WriteLine("График финального состояния сохранен: lab1_final.png");
+            _plotService.CreatePlot(label);
+            Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.Purple, Color.Aquamarine, Color.Chocolate, Color.Gold, Color.HotPink, Color.Khaki };
 
-            _plotService.CreatePlot("Эволюция распределения температуры", "", "");
-            Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.Purple };
-
-            for (int i = 0; i < Math.Min(history.Count, 5); i++) 
+            for (int i = 0; i < Math.Min(history.Count, 10); i++) 
             {
-                //string label = i == 0 ? "Начальное состояние" : $"Шаг {i * 10}";
-                _plotService.AddScatter(x, history[i], ScottPlot.Color.FromColor(colors[i % colors.Length]));
+                string legendLabel = i == 0 ? "Шаг 1" : $"Шаг {i * 10}";
+                _plotService.AddScatter(x, history[i], legendLabel, ScottPlot.Color.FromColor(colors[i % colors.Length]), lineWidth: 2);
             }
-            _plotService.SavePlot("lab1_evolution.png");
-            Console.WriteLine("График эволюции сохранен: lab1_evolution.png");
-
-            Console.WriteLine("\nАнализ результатов:");
-            Console.WriteLine($"Максимальная температура: {finalTemperature.Max():F2} °C");
-            Console.WriteLine($"Минимальная температура: {finalTemperature.Min():F2} °C");
-            Console.WriteLine($"Скорость перемещения фронта: ~{data.U:F2} м/с");
-            bool conditionMet = Math.Abs(finalTemperature[^1]) < data.T0 / 2.0;
-            Console.WriteLine($"Условие остановки (T_end < T0/2): {conditionMet}");
+            _plotService.SavePlot($"lab1_{fileMark}.png");
+            Console.WriteLine($"{label} сохранен: lab1_{fileMark}.png");
 
             _plotService.ShowPlot();
+
+            return Task.CompletedTask;
         }
     }
 }
