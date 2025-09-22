@@ -34,6 +34,9 @@ namespace NMLabs.Labs.Lab1_Advection
                 CFL_Central = InputHelper.GetDoubleFromConsole("Введите CFL для центральной разности: "),
             };
 
+            int stepDirectional = InputHelper.GetIntFromConsole("Введите шаг построения для направленной разности: ");
+            int stepCentral = InputHelper.GetIntFromConsole("Введите шаг построения для центральной разности: ");
+
             Console.WriteLine("Параметры расчета:");
             Console.WriteLine($"X = {data.X}");
             Console.WriteLine($"dx = {data.Dx}");
@@ -49,20 +52,19 @@ namespace NMLabs.Labs.Lab1_Advection
 
             Console.WriteLine($"\nРасчет завершен. Получено {historyDir.Count} временных срезов для направленной и {historyCen.Count} временных срезов для центральной разности.");
 
-            await PlotResults(xDir, historyDir, $"Изменение T по уравнению направленной разности при CFL={data.CFL_Directional}", "Directional", data);
-            await PlotResults(xCen, historyCen, $"Изменение T по уравнению центральной разности при CFL={data.CFL_Central}", "Central", data);
+            await PlotResults(xDir, historyDir, $"Изменение T по уравнению направленной разности при КФЛ={data.CFL_Directional}", "Directional", stepDirectional, data);
+            await PlotResults(xCen, historyCen, $"Изменение T по уравнению центральной разности при КФЛ={data.CFL_Central}", "Central", stepCentral, data);
         }
 
-        private Task PlotResults(double[] x, List<double[]> history, string label, string fileMark, AdvectionParameters data) 
+        private Task PlotResults(double[] x, List<double[]> history, string label, string fileMark, int step, AdvectionParameters data) 
         {
             _plotService.CreatePlot(label);
-            Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.Purple, Color.Aquamarine, Color.Chocolate, Color.Gold, Color.HotPink, Color.Khaki };
-
-            for (int i = 0; i < Math.Min(history.Count, 10); i++) 
+            
+            for (int i = 0; i < history.Count; i += step) 
             {
-                string legendLabel = i == 0 ? "Шаг 1" : $"Шаг {i * 10}";
-                _plotService.AddScatter(x, history[i], legendLabel, ScottPlot.Color.FromColor(colors[i % colors.Length]), lineWidth: 2);
+                _plotService.AddScatter(x, history[i], lineWidth: 2);
             }
+
             _plotService.SavePlot($"lab1_{fileMark}.png");
             Console.WriteLine($"{label} сохранен: lab1_{fileMark}.png");
 
