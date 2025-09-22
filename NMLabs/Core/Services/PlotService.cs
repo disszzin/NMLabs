@@ -1,18 +1,29 @@
 ﻿using ScottPlot;
 using ScottPlot.WinForms;
+using ScottPlot.TickGenerators;
 
 namespace NMLabs.Core.Services;
 
 public interface IPlotSevice 
 {
     void CreatePlot(string title, string xlabel = "", string ylabel = "");
-    void AddScatter(double[] xs, double[] ys, string label, ScottPlot.Color color, float lineWidth = 1);
+    void AddScatter(double[] xs, double[] ys, string label = "", ScottPlot.Color? color = null, float lineWidth = 1);
     void SavePlot(string filePath);
     void ShowPlot();
 }
 public class PlotService : IPlotSevice
 {
     private Plot _plot = new();
+    NumericAutomatic _yTickGenerator;
+
+    public PlotService() 
+    {
+        _yTickGenerator = new();
+        _yTickGenerator.LabelFormatter = (double value) =>
+        {
+            return value.ToString("E1");
+        };
+    }
 
     public void CreatePlot(string title, string xlabel = "", string ylabel = "")
     {
@@ -20,9 +31,10 @@ public class PlotService : IPlotSevice
         _plot.Title(title);
         _plot.XLabel(xlabel);
         _plot.YLabel(ylabel);
+        _plot.Axes.Left.TickGenerator = _yTickGenerator;
     }
 
-    public void AddScatter(double[] xs, double[] ys, string label, ScottPlot.Color color, float lineWidth = 1)
+    public void AddScatter(double[] xs, double[] ys, string label = "", ScottPlot.Color? color = null, float lineWidth = 1)
     {
         var scatter = _plot.Add.Scatter(xs, ys, color);
         scatter.LineWidth = lineWidth;
