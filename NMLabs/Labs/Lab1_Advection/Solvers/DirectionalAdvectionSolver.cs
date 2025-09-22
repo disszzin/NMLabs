@@ -13,12 +13,7 @@ public class DirectionalAdvectionSolver : IMathSolver<AdvectionParameters, (doub
 
         double[] T1 = new double[n];
         double[] T2 = new double[n];
-        double[] xAxis = new double[n];
-
-        for (int i = 0; i < n; i++) 
-        {
-            xAxis[i] = i * data.Dx;
-        }
+        double[] xAxis = [.. Enumerable.Range(0, n).Select(i => i * data.Dx)];
 
         T1[0] = data.T0;
         T2[0] = data.T0;
