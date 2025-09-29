@@ -8,7 +8,6 @@ public interface IPlotSevice
 {
     void CreatePlot(string title, string xlabel = "", string ylabel = "");
     void AddScatter(double[] xs, double[] ys, string label = "", ScottPlot.Color? color = null, float lineWidth = 1);
-    void SavePlot(string filePath);
     void ShowPlot();
 }
 public class PlotService : IPlotSevice
@@ -41,11 +40,6 @@ public class PlotService : IPlotSevice
         scatter.LegendText = label;
         scatter.MarkerSize = 0;
         _plot.Axes.AutoScale();
-    }
-
-    public void SavePlot(string filePath)
-    {
-        _plot.SavePng(filePath, 1920, 1080);
     }
 
     public void ShowPlot()

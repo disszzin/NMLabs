@@ -56,11 +56,11 @@ namespace NMLabs.Labs.Lab1_Advection
 
             Console.WriteLine($"\nРасчет завершен. Получено {historyDir.Count} временных срезов для направленной и {historyCen.Count} временных срезов для центральной разности.");
 
-            await PlotResults(xDir, historyDir, $"Изменение T по уравнению направленной разности при КФЛ={CFL_Directional}", "Directional", stepDirectional);
-            await PlotResults(xCen, historyCen, $"Изменение T по уравнению центральной разности при КФЛ={CFL_Directional}", "Central", stepCentral);
+            await PlotResults(xDir, historyDir, $"Изменение T по уравнению направленной разности при КФЛ={CFL_Directional}", stepDirectional);
+            await PlotResults(xCen, historyCen, $"Изменение T по уравнению центральной разности при КФЛ={CFL_Directional}", stepCentral);
         }
 
-        private Task PlotResults(double[] x, List<double[]> history, string label, string fileMark, int step) 
+        private Task PlotResults(double[] x, List<double[]> history, string label, int step) 
         {
             _plotService.CreatePlot(label);
             
@@ -69,8 +69,7 @@ namespace NMLabs.Labs.Lab1_Advection
                 _plotService.AddScatter(x, history[i], lineWidth: 2);
             }
 
-            _plotService.SavePlot($"lab1_{fileMark}.png");
-            Console.WriteLine($"{label} сохранен: lab1_{fileMark}.png");
+            Console.WriteLine($"Открываю график \"{label}\"...");
 
             _plotService.ShowPlot();
 
