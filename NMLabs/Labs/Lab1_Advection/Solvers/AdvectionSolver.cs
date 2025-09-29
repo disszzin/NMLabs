@@ -1,14 +1,16 @@
 ﻿using NMLabs.Core.Interfaces;
 using NMLabs.Labs.Lab1_Advection.Models;
+using static NMLabs.Labs.Lab1_Advection.Models.AdvectionParameters;
+
 
 namespace NMLabs.Labs.Lab1_Advection.Solvers;
 
-public class CentralAdvectionSolver : IMathSolver<AdvectionParameters, (double[] X, List<double[]> History)>
+public class AdvectionSolver : IMathSolver<AdvectionParameters, (double[] X, List<double[]> History)>
 {
     public (double[] X, List<double[]> History) Solve(AdvectionParameters data)
     {
         int n = (int)(data.X / data.Dx) + 1;    // Число элементов в массивах
-        double dt = data.CFL_Central * data.Dx / data.U;    // Шаг по времени
+        double dt = data.CFL * data.Dx / data.U;    // Шаг по времени
 
         double[] T1 = new double[n];
         double[] T2 = new double[n];
@@ -21,10 +23,13 @@ public class CentralAdvectionSolver : IMathSolver<AdvectionParameters, (double[]
 
         int iteration = 1;
 
-        while (true)
+        while (true) 
         {
             for (int i = 1; i < n - 1; i++)
-                T2[i] = T1[i] - data.U * dt / (2 * data.Dx) * (T1[i + 1] - T1[i - 1]);      // Расчет по формуле
+                if (data.Type == AdvectionType.Directional)
+                    T2[i] = T1[i] - data.U * dt / data.Dx * (T1[i] - T1[i - 1]);        // Расчет по формуле в зависимости от типа адвекции
+                else
+                    T2[i] = T1[i] - data.U * dt / (2 * data.Dx) * (T1[i + 1] - T1[i - 1]);
 
             T2[n - 1] = T2[n - 2];      // Граничное условие
 
@@ -34,7 +39,7 @@ public class CentralAdvectionSolver : IMathSolver<AdvectionParameters, (double[]
                 iteration = 1;
             }
 
-            if (T2[n - 1] >= data.T0 / 2.0)     // Условие выхода из цикла
+            if (Math.Abs(T2[n - 1]) >= data.T0 / 2.0)     // Условие выхода из цикла
                 break;
 
             Array.Copy(T2, T1, n);      // Копируем T2 в T1 для следующей итерации
